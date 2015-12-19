@@ -11,6 +11,8 @@ import os
 BRANDEIS_ID = os.environ['BRANDEIS_ID'] #Your Brandeis username from environment variable
 BRANDEIS_PASSWORD = os.environ['BRANDEIS_PASSWORD']     #Your Brandeis password from environment variable
 SEMESTER = 1                            #Semester count from the most recent (0th semester is the most recent one after registration, 1st is the one before that, etc.)
+
+#added
 SPEED_CONSTANT = 5                      #Number of seconds to wait for page redirection
 HEADLESS = True
 
