@@ -10,7 +10,7 @@ import os
 
 BRANDEIS_ID = os.environ['BRANDEIS_ID'] #Your Brandeis username from environment variable
 BRANDEIS_PASSWORD = os.environ['BRANDEIS_PASSWORD']     #Your Brandeis password from environment variable
-SEMESTER = 0                            #Semester count from the most recent (0th semester is the most recent one after registration, 1st is the one before that, etc.)
+SEMESTER = 1                            #Semester count from the most recent (0th semester is the most recent one after registration, 1st is the one before that, etc.)
 SPEED_CONSTANT = 5                      #Number of seconds to wait for page redirection
 HEADLESS = True
 
@@ -21,7 +21,7 @@ def get_grades():
         dirname, filename = os.path.split(os.path.abspath(__file__))
         browser = webdriver.PhantomJS(dirname + '/phantomjs')
     else:
-        browser = webdriver.Firefox()
+        browser = webdriver.Chrome()
 
     #Sage Login Page
 
@@ -58,9 +58,10 @@ def get_grades():
 
         browser.switch_to_frame('TargetContent')
 
-    except:
+    except selenium.common.exceptions.NoSuchElementException:
         print "Page failed to load, try increasing your speed constant"
-        return
+        browser.stop()
+        raise
 
 
     #Gets semester list of inputs
@@ -85,7 +86,7 @@ def get_grades():
 
     #Gets table of course titles
 
-    grade_string = ''
+    grade_string = []
 
     try:
 
@@ -96,13 +97,14 @@ def get_grades():
         for idx, val in enumerate(courses):
             course = val.text
             grade = browser.find_element_by_id('DERIVED_REGFRM1_CRSE_GRADE_OFF$'+str(idx)).text
-            grade_string+= '{0:60} : {1}\n'.format(course,grade)
+            grade_string.append((course,grade))
 
-    except:
+    except selenium.common.exceptions.NoSuchElementException:
         print "Page failed to load, try increasing your speed constant"
+        browser.quit()
         return
-
-
+    
+    browser.quit()
     return grade_string
 
 if __name__ == '__main__':
